@@ -3,7 +3,7 @@ body {
   display: grid;
   grid-template-areas: 
     "header header"
-    "sidebar fridge";
+    "sidebar cardarea";
   grid-template-columns: 25% 75%;
   grid-template-rows: 60px 100%;
   font-family: 'Open Sans', sans-serif;
@@ -172,10 +172,10 @@ h1 span {
   width: 96%;
 }
 
-.fridge {
+.cardarea {
   background-color: #F4F7F8;
   column-width: 17rem;  
-  grid-area: fridge;
+  grid-area: cardarea;
 }
 
 h2 {
@@ -184,7 +184,7 @@ h2 {
 
 .todo__listprompt {
   display: grid;
-  grid-area: fridge;
+  grid-area: cardarea;
   justify-content: center;
   margin-top: 21px;
 }
@@ -262,17 +262,24 @@ h2 {
   text-align: center;
 }
 
-.todo__card .urgent h2 {
+.todo__card-urgent h2 {
   border-bottom: 2px solid #FEC40E;
 }
 
-.todo__card .urgent {
+.todo__card-urgent {
   background-color: #FEE89E;
   border: 2px solid #FEC40E;
 }
 
-.todo__bottom .urgent {
+.todo__bottom-urgent {
   border-top: 2px solid #FEC40E;
+  color: #B23A25;
+}
+
+.todo__middle-checkbox {
+  color: #3C6577;
+  font-style: italic;
+  font-weight: 600;
 }
 
 @media only screen 
@@ -303,7 +310,7 @@ h1 {
   padding: -10px auto 10px auto;
 }
 
-.fridge {
+.cardarea {
   height: auto;
   width: 100%;
 }

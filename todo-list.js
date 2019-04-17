@@ -1,9 +1,9 @@
 class ToDo {
   constructor(id, title, taskObj, urgent) {
-    this.id = id;
-    this.title = title;
-    this.task = taskObj || [];
-    this.urgent = urgent || false;
+    this.id = id,
+    this.title = title,
+    this.task = taskObj || [],
+    this.urgent = urgent || false
   }
 
   saveToStorage(toDoCollection) {
@@ -12,17 +12,16 @@ class ToDo {
 
   deleteFromStorage(index) {
     toDoCollection.splice(index, 1);
-     this.saveToStorage();
+     this.saveToStorage(toDoCollection);
   }
 
   updateToDo() {
-    // this.urgent = !this.urgent;
-    this.saveToStorage();
+    this.urgent = !this.urgent;
+    this.saveToStorage(toDoCollection);
   }
 
-  updateTask(editedTitle, completed) {
-    //this.completed = completed || false;
-    //this.title = editedTitle;
-    this.saveToStorage();
+  updateTask(checked) {
+    this.checked = checked || false;
+    this.saveToStorage(toDoCollection);
   }
 }

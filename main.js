@@ -7,7 +7,7 @@ makeListButton = document.querySelector(".sidebar__form1-make");
 clearAllButton = document.querySelector(".sidebar__form1-clear");
 filterButton = document.querySelector(".sidebar__form2-filter")
 listPrompt = document.querySelector(".todo__listprompt");
-fridge = document.querySelector(".fridge");
+cardarea = document.querySelector(".cardarea");
 
 var toDoCollection = JSON.parse(localStorage.getItem("savedTodos")) || [];
 
@@ -16,7 +16,7 @@ sidebarTaskAdd.addEventListener('click', displaySidebarTasks);
 makeListButton.addEventListener('click', addTaskToCollection);
 clearAllButton.addEventListener('click', clearSidebar);
 sidebarTaskList.addEventListener('click', deleteSidebarTasks);
-fridge.addEventListener('click', deleteDisplayedCards);
+cardarea.addEventListener('click', cardButtons);
 
 function loadPage() {
   makeListButton.disabled = true;
@@ -49,17 +49,17 @@ function displayToDos(toDoInstance) {
         ${collectTaskList(toDoInstance)}
         </section>
         <section class="todo__bottom">
-          <article class="card-bottom-left">
+          <article class="card-bottom-urgent">
             <img class="todo__bottom-urgent" src="images/urgent.svg" alt="urgent">
             <p class="todo__bottom-urgent">URGENT</p>
           </article>
-          <article class="card-bottom-right">
+          <article class="card-bottom-delete">
             <img class="todo__bottom-delete" src="images/delete.svg" alt="delete">
             <p class="todo__bottom-delete">DELETE</p>
           </article>
         </section>
     </div>`;
-  fridge.insertAdjacentHTML('afterbegin', toDoCard);
+  cardarea.insertAdjacentHTML('afterbegin', toDoCard);
 }
 
 function collectTaskList(toDoInstance, toDoCard) {
@@ -142,18 +142,82 @@ function showPrompt() {
   listPrompt.classList.remove("hidden");
 }
 
+// Card update click functions
+
+function cardButtons(e) {
+  var parentCard = e.target.parentNode.parentNode.parentNode.dataset.id;
+
+  if (e.target.className === 'todo__bottom-urgent') {
+    console.log(parentCard);
+    updateToUrgent(parentCard);
+  }
+  if (e.target.className === 'todo__bottom-delete') {
+    console.log(parentCard);
+    deleteDisplayedCards(parentCard);
+  }
+  if (e.target.className === 'todo__middle-checkbox') {
+    console.log(parentCard);
+    checkOffATask(parentCard, e);
+  }
+}
+
+
+
+
+function findCardIndex(card) {
+  var cardId = card.dataset.id;
+  console.log(cardId);
+  return toDoCollection.findIndex(function (item) {
+    return item.id == cardId;
+  });
+}
+
+function updateToUrgent(e) {
+  // might need to add class at reinstantiation, use conditional logic based on stored value
+  // todo__card.classList.add("todo__urgent")
+  var card = e.target.closest('.todo__card');
+  var index = findCardIndex(card);
+  storeUrgentCard(index);
+}
+
+function storeUrgentCard(index) {
+  var card = toDoCollection[index];
+  card.updateToDo();
+  cardarea.innerHTML = '';
+  reinstantiateToDos(toDoCollection);
+}
+
 function deleteDisplayedCards(e) {
-  //Delete from DOM working, delete from storage method not working
+  // this function needs to be unavailable(button is disabled) until all tasks on the list are checked
+  // need function to check for this.checked of ALL task items
   if (e.target.className === "todo__bottom-delete") {
     e.target.closest('.todo__card').remove();
     var targetId = parseInt(e.target.closest('.todo__card').dataset.id);
     let foundObj = toDoCollection.find(function (foundObj) {
-      console.log(foundObj.id);
-      console.log(targetId);
       foundObj.id === targetId
       foundObj.deleteFromStorage();
     })
     
     showPrompt();
   }
+}
+
+function checkOffATask(parentCard, e) {
+
+  var task = parentCard.childNodes.dataset.id;
+  // var task = e.target.closest('.todo__middle-div');
+  console.log("task on 207", task);
+  var index = findCardIndex(parentCard);
+  var toDoObject = toDoCollection[index];
+  var specificTaskIndex = findItemIndex(toDoObject, taskId);
+  toDoObject.updateTask(specificTaskIndex);
+  cardArea.innerHTML = '';
+  reinstantiateToDos();
+}
+
+function findItemIndex(toDoObject, taskId) {
+  console.log(toDoObject);
+  return toDoObject.task.findIndex(function (item) {
+    return item.id == taskId;
+  });
 }
