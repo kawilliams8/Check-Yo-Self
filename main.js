@@ -8,6 +8,8 @@ clearAllButton = document.querySelector(".sidebar__form1-clear");
 filterButton = document.querySelector(".sidebar__form2-filter")
 listPrompt = document.querySelector(".todo__listprompt");
 cardarea = document.querySelector(".cardarea");
+searchInput = document.querySelector(".header__search-input");
+titleSearch = document.querySelectorAll(".todo__top");
 
 var toDoCollection = JSON.parse(localStorage.getItem("savedTodos")) || [];
 
@@ -17,6 +19,7 @@ makeListButton.addEventListener('click', addTaskToCollection);
 clearAllButton.addEventListener('click', clearSidebar);
 sidebarTaskList.addEventListener('click', deleteSidebarTasks);
 cardarea.addEventListener('click', cardButtons);
+searchInput.addEventListener('keyup', searchToDos);
 
 function loadPage() {
   makeListButton.disabled = true;
@@ -226,3 +229,11 @@ function findCardIndex(card) {
     return item.id == cardId;
   });
 }
+
+function searchToDos(e) {
+  e.preventDefault();
+  var searchText = searchInput.value.toLowerCase();
+  var searchOutput = toDoCollection.filter(card => card.title.toLowerCase().includes(searchText));
+  cardarea.innerHTML = "";
+  searchOutput.forEach(toDo => displayToDos(toDo));
+  }
