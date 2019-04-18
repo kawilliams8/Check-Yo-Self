@@ -66,7 +66,7 @@ function collectTaskList(toDoInstance, toDoCard) {
   var cardTasks = "";
   toDoInstance.task.forEach(function (data) {
     cardTasks += `
-    <div class="todo__middle-div">
+    <div class="todo__middle-div" data-id=${Date.now()}>
 				<img class="todo__middle-checkbox" src="images/checkbox.svg">
 				<p class="todo__middle-text">${data.text}</p>
 		</div>`
@@ -161,17 +161,6 @@ function cardButtons(e) {
   }
 }
 
-
-
-
-function findCardIndex(card) {
-  var cardId = card.dataset.id;
-  console.log(cardId);
-  return toDoCollection.findIndex(function (item) {
-    return item.id == cardId;
-  });
-}
-
 function updateToUrgent(e) {
   // might need to add class at reinstantiation, use conditional logic based on stored value
   // todo__card.classList.add("todo__urgent")
@@ -203,21 +192,33 @@ function deleteDisplayedCards(e) {
 }
 
 function checkOffATask(parentCard, e) {
-
-  var task = parentCard.childNodes.dataset.id;
-  // var task = e.target.closest('.todo__middle-div');
-  console.log("task on 207", task);
-  var index = findCardIndex(parentCard);
+  var parentCard = parentCard;
+  console.log("parentCard", parentCard);
+  var currentTask = e.target.closest(".todo__middle-div");
+  console.log("currentTask", currentTask);
+  var index = findCardIndex(currentTask);
+  //Need to drill down farther, we're just getting to the index of the object and not the task
+  console.log("index", index);
   var toDoObject = toDoCollection[index];
-  var specificTaskIndex = findItemIndex(toDoObject, taskId);
+  console.log("toDoObject", toDoObject)
+  var specificTaskIndex = findItemIndex(toDoObject, parentCard);
+  console.log("specificTaskIndex", specificTaskIndex);
   toDoObject.updateTask(specificTaskIndex);
+  toDoObject.saveToStorage();
   cardArea.innerHTML = '';
   reinstantiateToDos();
 }
 
-function findItemIndex(toDoObject, taskId) {
-  console.log(toDoObject);
+function findItemIndex(toDoObject, parentCard) {
   return toDoObject.task.findIndex(function (item) {
     return item.id == taskId;
+  });
+}
+
+function findCardIndex(card) {
+  var cardId = card.dataset.id;
+  console.log(cardId);
+  return toDoCollection.findIndex(function (item) {
+    return item.id == cardId;
   });
 }
