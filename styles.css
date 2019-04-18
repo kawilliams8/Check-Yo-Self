@@ -269,6 +269,7 @@ h2 {
 .todo__card-urgent {
   background-color: #FEE89E;
   border: 2px solid #FEC40E;
+  border-bottom: 2px solid #FEC40E;
 }
 
 .todo__bottom-urgent {

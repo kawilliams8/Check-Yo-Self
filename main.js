@@ -50,8 +50,8 @@ function displayToDos(toDoInstance) {
         </section>
         <section class="todo__bottom">
           <article class="card-bottom-urgent">
-            <img class="todo__bottom-urgent" src="images/urgent.svg" alt="urgent">
-            <p class="todo__bottom-urgent">URGENT</p>
+            <img class="todo__bottom" src="images/urgent.svg" alt="urgent">
+            <p class="todo__bottom">URGENT</p>
           </article>
           <article class="card-bottom-delete">
             <img class="todo__bottom-delete" src="images/delete.svg" alt="delete">
@@ -147,24 +147,27 @@ function showPrompt() {
 function cardButtons(e) {
   var parentCard = e.target.parentNode.parentNode.parentNode.dataset.id;
 
-  if (e.target.className === 'todo__bottom-urgent') {
-    console.log(parentCard);
-    updateToUrgent(parentCard);
+  if (e.target.className === 'todo__bottom') {
+    updateToUrgent(e);
   }
   if (e.target.className === 'todo__bottom-delete') {
-    console.log(parentCard);
     deleteDisplayedCards(parentCard);
   }
   if (e.target.className === 'todo__middle-checkbox') {
-    console.log(parentCard);
     checkOffATask(parentCard, e);
   }
 }
 
 function updateToUrgent(e) {
   // might need to add class at reinstantiation, use conditional logic based on stored value
-  // todo__card.classList.add("todo__urgent")
-  var card = e.target.closest('.todo__card');
+  console.log("e.target.etc", e.target.parentNode.parentNode.parentNode);
+  var cardBottom = e.target.parentNode.parentNode.parentNode;
+  var abc = cardBottom.matches('.todo__bottom');
+  console.log("hello");
+  var cardContainer = e.target.parentNode.parentNode.parentNode;
+  var def = cardContainer.matches(".todo__card");
+  abc.classList.add("todo__bottom-urgent");
+  def.classList.add("todo__card-urgent");
   var index = findCardIndex(card);
   storeUrgentCard(index);
 }
@@ -179,6 +182,7 @@ function storeUrgentCard(index) {
 function deleteDisplayedCards(e) {
   // this function needs to be unavailable(button is disabled) until all tasks on the list are checked
   // need function to check for this.checked of ALL task items
+  //iterate thorugh the objects and check for the property of checked = true, if so, do this, else, disable button
   if (e.target.className === "todo__bottom-delete") {
     e.target.closest('.todo__card').remove();
     var targetId = parseInt(e.target.closest('.todo__card').dataset.id);
