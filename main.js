@@ -185,23 +185,23 @@ function updateButton(e) {
   console.log('paragraph el:', paragraph);
 
   //update paragraph classes for text color:
-  if (paragraph.classList.contains('todo__bottom-urgent')) {
-    paragraph.classList.add("todo__bottom-p")
-    paragraph.classList.remove("todo__bottom-urgent")
+  if (paragraph.classList.contains('todo__urgent-p')) {
+    paragraph.classList.add("todo__bottom-urgent")
+    paragraph.classList.remove("todo__bottom-style")
   } else {
-  paragraph.classList.add("todo__bottom-urgent");
-  paragraph.classList.remove("todo__bottom-p");
+    paragraph.classList.add("todo__bottom-style");
+    paragraph.classList.remove("todo__bottom-urgent");
   }
 
   //update image classes for image toggle:
-  if (image.classList.contains('todo__bottom-img')) {
-    image.classList.add("todo__bottom-button-style");
-    image.setAttribute(src, "images/urgent-active.svg");
+  if (image.classList.contains('todo__update-img')) {
+    image.setAttribute('src', "images/urgent-active.svg");
   } else {
-    image.classList.remove("todo__bottom-button-style");
-    image.setAttribute(src, "images/urgent.svg");
+    image.setAttribute('src', "images/urgent.svg");
   }
+  //Need functionality to add class that toggles urgent card styling
   }
+
 
 // function storeUrgentCard(index) {
 //   var card = toDoCollection[index];
@@ -254,27 +254,34 @@ function checkOffATask(parentCard, e) {
   console.log('task', task)
    if (task.id) {
       task.checked = !task.checked;
+    //  return task;
       }
     console.log("task after if: ", task);
-    return task;
-    addCheckMark();
+    addCheckMark(task.checked, e);
     savetoStorage();
 }
 
-// function addCheckMark() {
+function addCheckMark(task, e) {
+console.log("task.checked: ", task);
+  if (task.checked) {
+    //Need to target innerHTML to switch checkmark image
+    image.setAttribute('src', "images/checkbox-active.svg");
+  } else {
+    image.setAttribute('src', "images/checkbox.svg");
+  }
 
-  //Can also use ternary in the appended card
-  //if task.checked ? display src="checkbox-active.svg" : display src="checkbox.svg"
+  // Can also use ternary in the appended card
+  // if task.checked ? display src="checkbox-active.svg" : display src="checkbox.svg"
 
-//     if (task.checked) {
-//       .innerHTML = "",
-//       += `
-//     <div class="todo__middle-div" data-id=${data.id}>
-// 				<img class="todo__middle-checkbox" src="images/checkbox-active.svg">
-// 				<p class="todo__middle-text">${data.text}</p>
-// 		</div>`
-//     }
-// }
+  //   if (task.checked) {
+  //     .innerHTML = "",
+  //     += `
+  //   <div class="todo__middle-div" data-id=${data.id}>
+	// 			<img class="todo__middle-checkbox" src="images/checkbox-active.svg">
+	// 			<p class="todo__middle-text">${data.text}</p>
+	// 	</div>`
+  //   }
+}
 
 // function findItemIndex(toDoObject, parentCard) {
 //   return toDoObject.task.findIndex(function (item) {
