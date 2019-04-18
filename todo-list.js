@@ -24,4 +24,4 @@ class ToDo {
     this.checked = checked || false;
     this.saveToStorage(toDoCollection);
   }
-}
+} 

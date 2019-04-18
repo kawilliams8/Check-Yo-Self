@@ -239,14 +239,14 @@ h2 {
 .todo__bottom {
   border-top: 2px solid #C7D3D8;
   display: flex;
-  display: flex;
   font-size: 9px;
   height: 50px;
   justify-content: space-between;
   padding-top: 2px;
 }
 
-.todo__bottom img {
+.todo__update-img,
+.todo__delete-img {
   display: flex;
   height: 23px;
   justify-content: space-between;
@@ -255,11 +255,19 @@ h2 {
   width: 23px;
 } 
 
-.todo__bottom p {
-  color: #2C6780;
+.todo__urgent-p,
+.todo__delete-p {
   font-weight: 700;
   margin-top: 3px;
   text-align: center;
+}
+
+.todo__bottom-style {
+  color: #2C6780;
+}
+
+.todo__bottom-urgent {
+  color: #B23A25;
 }
 
 .todo__card-urgent h2 {
@@ -270,11 +278,6 @@ h2 {
   background-color: #FEE89E;
   border: 2px solid #FEC40E;
   border-bottom: 2px solid #FEC40E;
-}
-
-.todo__bottom-urgent {
-  border-top: 2px solid #FEC40E;
-  color: #B23A25;
 }
 
 .todo__middle-checkbox {

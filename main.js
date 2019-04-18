@@ -19,7 +19,7 @@ makeListButton.addEventListener('click', addTaskToCollection);
 clearAllButton.addEventListener('click', clearSidebar);
 sidebarTaskList.addEventListener('click', deleteSidebarTasks);
 cardarea.addEventListener('click', cardButtons);
-searchInput.addEventListener('keyup', searchToDos);
+searchInput.addEventListener('keyup', searchToDosTitles);
 
 function loadPage() {
   makeListButton.disabled = true;
@@ -33,8 +33,15 @@ function reinstantiateToDos(toDoCollection) {
     var newData = new ToDo(data.id, data.title, data.task, data.urgent, data.completed);
     return newData;
   })
-
   displaySavedToDos(newToDoInstances);
+}
+
+function searchToDosTitles(e) {
+  e.preventDefault();
+  var searchText = searchInput.value.toLowerCase();
+  var searchOutput = toDoCollection.filter(card => card.title.toLowerCase().includes(searchText));
+  cardarea.innerHTML = "";
+  searchOutput.forEach(toDo => displayToDos(toDo));
 }
 
 function displaySavedToDos(newToDoInstances) {
@@ -53,28 +60,33 @@ function displayToDos(toDoInstance) {
         </section>
         <section class="todo__bottom">
           <article class="card-bottom-urgent">
-            <img class="todo__bottom" src="images/urgent.svg" alt="urgent">
-            <p class="todo__bottom">URGENT</p>
+            <img class="todo__update-img" src="images/urgent.svg" alt="urgent">
+            <p class="todo__urgent-p todo__bottom-style ">URGENT</p>
           </article>
           <article class="card-bottom-delete">
-            <img class="todo__bottom-delete" src="images/delete.svg" alt="delete">
-            <p class="todo__bottom-delete">DELETE</p>
+            <img class="todo__delete-img" src="images/delete.svg" alt="delete">
+            <p class="todo__delete-p todo__bottom-style">DELETE</p>
           </article>
         </section>
     </div>`;
   cardarea.insertAdjacentHTML('afterbegin', toDoCard);
 }
 
+function hidePrompt() {
+  if (toDoCollection.length > 0) {
+    listPrompt.classList.add("hidden");
+  }
+}
+
 function collectTaskList(toDoInstance, toDoCard) {
   var cardTasks = "";
   toDoInstance.task.forEach(function (data) {
     cardTasks += `
-    <div class="todo__middle-div" data-id=${Date.now()}>
+    <div class="todo__middle-div" data-id=${data.id}>
 				<img class="todo__middle-checkbox" src="images/checkbox.svg">
 				<p class="todo__middle-text">${data.text}</p>
 		</div>`
   })
-
   return cardTasks;
 }
 
@@ -89,6 +101,10 @@ function displaySidebarTasks() {
   clearAllButton.disabled = false;
 }
 
+function clearTaskInput() {
+  itemInput.value = "";
+}
+
 function addTaskToCollection(newTask) {
   var secondTaskArray = [];
   var newTaskArray = document.querySelectorAll(".task-item__text");
@@ -98,10 +114,8 @@ function addTaskToCollection(newTask) {
       id: newTaskArray[i].dataset.id,
       checked: false
     }
-
     secondTaskArray.push(taskObj);
   }
-  
   instantiateToDo(secondTaskArray);
 }
 
@@ -123,10 +137,6 @@ function clearTitleInput() {
   clearAllButton.disabled = true;
 }
 
-function clearTaskInput() {
-  itemInput.value = "";
-}
-
 function clearSidebarList() {
   sidebarTaskList.innerHTML = "";
 }
@@ -135,57 +145,90 @@ function deleteSidebarTasks(e) {
   e.target.closest("div").remove();
 }
 
-function hidePrompt() {
-  if (toDoCollection.length > 0) {
-    listPrompt.classList.add("hidden");
-  }
-}
-
-function showPrompt() {
-  listPrompt.classList.remove("hidden");
-}
-
-// Card update click functions
+// Card update Click Functions
 
 function cardButtons(e) {
   var parentCard = e.target.parentNode.parentNode.parentNode.dataset.id;
-
-  if (e.target.className === 'todo__bottom') {
+  console.log(e.target);
+  if (e.target.className === 'todo__update-img') {
+    console.log('update')
     updateToUrgent(e);
   }
-  if (e.target.className === 'todo__bottom-delete') {
-    deleteDisplayedCards(parentCard);
+  if (e.target.className === 'todo__delete-img') {
+    console.log('delete')
+    deleteDisplayedCards(parentCard, e);
   }
   if (e.target.className === 'todo__middle-checkbox') {
+    console.log('checkoff')
     checkOffATask(parentCard, e);
   }
 }
 
 function updateToUrgent(e) {
-  // might need to add class at reinstantiation, use conditional logic based on stored value
-  console.log("e.target.etc", e.target.parentNode.parentNode.parentNode);
-  var cardBottom = e.target.parentNode.parentNode.parentNode;
-  var abc = cardBottom.matches('.todo__bottom');
-  console.log("hello");
-  var cardContainer = e.target.parentNode.parentNode.parentNode;
-  var def = cardContainer.matches(".todo__card");
-  abc.classList.add("todo__bottom-urgent");
-  def.classList.add("todo__card-urgent");
-  var index = findCardIndex(card);
-  storeUrgentCard(index);
+  var currentTodoId = e.target.closest('.todo__card').dataset.id;
+  var todo = toDoCollection.find(todo => todo.id === parseInt(currentTodoId));
+  var urgentToggle = todo.urgent = !todo.urgent;
+  console.log('update function working',todo)
+  if(todo.urgent){
+    updateButton(e);
+    // savetoStorage();
+  }
+  console.log('inside if statement');
+  return urgentToggle;
 }
 
-function storeUrgentCard(index) {
-  var card = toDoCollection[index];
-  card.updateToDo();
-  cardarea.innerHTML = '';
-  reinstantiateToDos(toDoCollection);
-}
+function updateButton(e) {
+  console.log(e.target.parentNode.childNodes[3])
+  var paragraph = e.target.parentNode.childNodes[3];
+  var image = e.target.parentNode.childNodes[1];
+  console.log("image el:", image);
+  console.log('paragraph el:', paragraph);
+
+  //update paragraph classes for text color:
+  if (paragraph.classList.contains('todo__bottom-urgent')) {
+    paragraph.classList.add("todo__bottom-p")
+    paragraph.classList.remove("todo__bottom-urgent")
+  } else {
+  paragraph.classList.add("todo__bottom-urgent");
+  paragraph.classList.remove("todo__bottom-p");
+  }
+
+  //update image classes for image toggle:
+  if (image.classList.contains('todo__bottom-img')) {
+    image.classList.add("todo__bottom-button-style");
+    image.setAttribute(src, "images/urgent-active.svg");
+  } else {
+    image.classList.remove("todo__bottom-button-style");
+    image.setAttribute(src, "images/urgent.svg");
+  }
+  }
+
+// function storeUrgentCard(index) {
+//   var card = toDoCollection[index];
+//   card.updateToDo();
+//   cardarea.innerHTML = '';
+//   reinstantiateToDos(toDoCollection);
+// }
+
+  // var button = e.target.closest('.card-bottom-urgent');
+  // var parentCard = parentCard;
+  // var matchingCard = toDoCollection.find(toDoCard => toDoCard.id == parentCard);
+  // console.log('the clicked card:', matchingCard);
+  // // console.log("e.target.etc:", e.target.parentNode.parentNode.parentNode);
+  // // var cardBottom = e.target.parentNode.parentNode.parentNode;
+  // var urgentButton = matchingCard.closest('.todo__bottom');
+  // // console.log("inside urgent");
+  // // var cardContainer = e.target.parentNode.parentNode.parentNode;
+  // // var def = cardContainer.matches(".todo__card");
+  // urgentButton.classList.add("todo__bottom-urgent");
+  // matchingCard.classList.add("todo__card-urgent");
+  // // var index = findCardIndex(card);
+  // // storeUrgentCard();
 
 function deleteDisplayedCards(e) {
   // this function needs to be unavailable(button is disabled) until all tasks on the list are checked
   // need function to check for this.checked of ALL task items
-  //iterate thorugh the objects and check for the property of checked = true, if so, do this, else, disable button
+  // it it returns true, then delete button .disabled = false;
   if (e.target.className === "todo__bottom-delete") {
     e.target.closest('.todo__card').remove();
     var targetId = parseInt(e.target.closest('.todo__card').dataset.id);
@@ -198,42 +241,53 @@ function deleteDisplayedCards(e) {
   }
 }
 
+function showPrompt() {
+  listPrompt.classList.remove("hidden");
+}
+
 function checkOffATask(parentCard, e) {
-  var parentCard = parentCard;
-  console.log("parentCard", parentCard);
-  var currentTask = e.target.closest(".todo__middle-div");
-  console.log("currentTask", currentTask);
-  var index = findCardIndex(currentTask);
-  //Need to drill down farther, we're just getting to the index of the object and not the task
-  console.log("index", index);
-  var toDoObject = toDoCollection[index];
-  console.log("toDoObject", toDoObject)
-  var specificTaskIndex = findItemIndex(toDoObject, parentCard);
-  console.log("specificTaskIndex", specificTaskIndex);
-  toDoObject.updateTask(specificTaskIndex);
-  toDoObject.saveToStorage();
-  cardArea.innerHTML = '';
-  reinstantiateToDos();
+  var currentTaskId = e.target.closest(".todo__middle-div").dataset.id;
+  var currentTodoId = e.target.closest('.todo__card').dataset.id;
+  var todo = toDoCollection.find(todo => todo.id === parseInt(currentTodoId));
+  console.log('todo',todo)
+  var task = todo.task.find(t => t.id === currentTaskId);
+  console.log('task', task)
+   if (task.id) {
+      task.checked = !task.checked;
+      }
+    console.log("task after if: ", task);
+    return task;
+    addCheckMark();
+    savetoStorage();
 }
 
-function findItemIndex(toDoObject, parentCard) {
-  return toDoObject.task.findIndex(function (item) {
-    return item.id == taskId;
-  });
-}
+// function addCheckMark() {
 
-function findCardIndex(card) {
-  var cardId = card.dataset.id;
-  console.log(cardId);
-  return toDoCollection.findIndex(function (item) {
-    return item.id == cardId;
-  });
-}
+  //Can also use ternary in the appended card
+  //if task.checked ? display src="checkbox-active.svg" : display src="checkbox.svg"
 
-function searchToDos(e) {
-  e.preventDefault();
-  var searchText = searchInput.value.toLowerCase();
-  var searchOutput = toDoCollection.filter(card => card.title.toLowerCase().includes(searchText));
-  cardarea.innerHTML = "";
-  searchOutput.forEach(toDo => displayToDos(toDo));
-  }
+//     if (task.checked) {
+//       .innerHTML = "",
+//       += `
+//     <div class="todo__middle-div" data-id=${data.id}>
+// 				<img class="todo__middle-checkbox" src="images/checkbox-active.svg">
+// 				<p class="todo__middle-text">${data.text}</p>
+// 		</div>`
+//     }
+// }
+
+// function findItemIndex(toDoObject, parentCard) {
+//   return toDoObject.task.findIndex(function (item) {
+//     return item.id == taskId;
+//   });
+// }
+
+// function findCardIndex(card) {
+//   var cardId = card.dataset.id;
+//   console.log("cardId in findCardIndex: ", cardId);
+//   return toDoCollection.findIndex(function (item) {
+//     return item.id == cardId;
+//   });
+// }
+
+
